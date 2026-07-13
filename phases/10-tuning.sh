@@ -5,7 +5,7 @@ source ./lib/common.sh
 PHASE="10-tuning"
 skip_if_done "$PHASE"
 require_sudo
-CONFIG_ARCHIVE="${CONFIG_ARCHIVE:-$HOME/projects/config-archive}"
+CONFIG_ARCHIVE="${CONFIG_ARCHIVE:-$HOME/bootstrap/config-archive}"
 
 log_info "Phase 10: system tuning (zram, sysctl, udev I/O schedulers)"
 install_pacman zram-generator
