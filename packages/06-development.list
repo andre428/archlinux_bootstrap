@@ -1,0 +1,15 @@
+python
+python-pip
+uv
+rustup
+neovim
+kate
+nodejs
+npm
+shellcheck
+shfmt
+cmake
+gdb
+lazygit
+docker
+direnv
