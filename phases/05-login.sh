@@ -7,8 +7,6 @@ PHASE="05-login"
 skip_if_done "$PHASE"
 require_sudo
 
-CONFIG_ARCHIVE="${CONFIG_ARCHIVE:-$HOME/archlinux_bootstrap/config-archive}"
-
 log_info "Phase 05: greetd + tuigreet"
 
 install_pacman_from_list packages/05-login.list

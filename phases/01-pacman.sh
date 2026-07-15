@@ -7,7 +7,6 @@ PHASE="01-pacman"
 skip_if_done "$PHASE"
 require_sudo
 
-CONFIG_ARCHIVE="${CONFIG_ARCHIVE:-$HOME/archlinux_bootstrap/config-archive}"
 CONF=/etc/pacman.conf
 BACKUP=/etc/pacman.conf.bak.bootstrap
 SOURCE_CONF="${CONFIG_ARCHIVE}/etc/pacman.conf"

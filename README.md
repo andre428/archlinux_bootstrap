@@ -6,14 +6,19 @@ terminal-first Hyprland setup for development and gaming, in a repeatable
 way on the same PC or a different one.
 
 This repo only installs packages and enables system-level services. It
-deliberately does not manage your `$HOME` config — two sibling repos handle
-that:
+deliberately does not manage your `$HOME` config — a nested directory and
+a sibling repo handle that:
 
-| Repo | Owns | Tool |
+| | Owns | Tool |
 |---|---|---|
-| **bootstrap** (this repo) | phase scripts, package lists | plain bash |
-| **config-archive** | system-level `/etc` files (greetd, sysctl, udev, systemd overrides) | plain `cp` |
-| **dotfiles** | your actual `$HOME` configs (hypr, waybar, kitty, nvim) | **yadm** |
+| **bootstrap** (this repo, incl. `config-archive/` inside it) | phase scripts, package lists, system-level `/etc` files | plain bash + `cp` |
+| **dotfiles** (separate repo) | your actual `$HOME` configs (hypr, waybar, kitty, nvim) | **yadm** |
+
+`config-archive/` lives *inside* this repo as a plain subdirectory —
+there's nothing separate to clone for it. `lib/common.sh` locates it
+automatically relative to wherever `bootstrap` itself ends up on disk, so
+it works regardless of what you name the clone directory or how deep you
+nest it (`~/projects/bootstrap`, `~/archlinux_bootstrap`, doesn't matter).
 
 Nothing in this repo touches `$HOME`. Everything user-facing lives in
 `dotfiles` and is pulled in by phase 11 via yadm.
@@ -76,40 +81,35 @@ runs in the default full sequence.
 
 ## Full walkthrough, fresh machine to finished desktop
 
-### 1. Get the repos onto the box
+### 1. Get the repo onto the box
 
 ```bash
 sudo pacman -S --needed git
-mkdir -p ~/projects && cd ~/projects
-git clone https://github.com/yourname/bootstrap.git
-git clone https://github.com/yourname/config-archive.git
+git clone https://github.com/yourname/bootstrap.git ~/bootstrap
+cd ~/bootstrap
 ```
 
-`dotfiles` is not cloned by hand — yadm does that in phase 11.
+That's it for repos — `config-archive/` came along inside this same
+clone. `dotfiles` isn't cloned by hand either; yadm does that in phase 11.
+Path/name doesn't matter (`~/bootstrap`, `~/projects/bootstrap`,
+`~/archlinux_bootstrap`) — every phase script finds `config-archive/`
+relative to wherever this repo actually is, not a hardcoded location.
 
-### 2. Point bootstrap at your config-archive checkout (if not the default path)
-
-```bash
-export CONFIG_ARCHIVE="$HOME/projects/config-archive"
-```
-(Default in the scripts is already `$HOME/projects/config-archive` — only
-needed if you put it somewhere else.)
-
-### 3. Run it
+### 2. Run it
 
 ```bash
 cd ~/projects/bootstrap
 ./run.sh
 ```
 
-### 4. It stops at phase 01 — reboot
+### 3. It stops at phase 01 — reboot
 
 ```
 >>> Reboot required. Reboot now, then run ./run.sh again
 ```
 Reboot. Log back in to the TTY.
 
-### 5. Continue — it runs phases 02–04 (AUR, fonts, desktop), then stops after phase 05
+### 4. Continue — it runs phases 02–04 (AUR, fonts, desktop), then stops after phase 05
 
 ```bash
 cd ~/projects/bootstrap
@@ -119,7 +119,7 @@ Phase 04 installs Hyprland and the Wayland utilities. Phase 05 installs
 greetd/tuigreet, points it at the now-installed `Hyprland`, enables the
 service, then asks for another reboot.
 
-### 6. Reboot, and this time actually test the login chain
+### 5. Reboot, and this time actually test the login chain
 
 Confirm:
 - tuigreet appears on tty1
@@ -131,7 +131,7 @@ If it fails here, don't panic and don't keep running phases — this is
 the cheapest point to debug, since nothing downstream depends on much
 yet. Check `journalctl -u greetd` and `journalctl --user -b` for errors.
 
-### 7. Continue the rest of the sequence
+### 6. Continue the rest of the sequence
 
 ```bash
 cd ~/projects/bootstrap
@@ -140,7 +140,7 @@ cd ~/projects/bootstrap
 This runs 06 through 08 (dev, apps, gaming) straight through — no
 reboot needed for any of these, they're just package installs.
 
-### 8. Tuning phase
+### 7. Tuning phase
 
 ```bash
 ./run.sh 10
@@ -149,7 +149,7 @@ Applies the borrowed zram/sysctl/udev tunables (see below for exactly
 what these are). No reboot required, though a fresh session for the
 zram swap to attach cleanly doesn't hurt.
 
-### 9. Dotfiles
+### 8. Dotfiles
 
 ```bash
 ./run.sh 11
@@ -159,7 +159,7 @@ Hyprland/waybar/kitty/nvim configs land in their real locations. This is
 the first point your desktop actually looks like *your* desktop instead
 of package defaults.
 
-### 10. Verify
+### 9. Verify
 
 ```bash
 ./run.sh 12
@@ -170,7 +170,7 @@ reachable, and runs `vulkaninfo`/`glxinfo` to confirm the RX 6800 is
 actually being picked up by Mesa. Safe to rerun any time, changes
 nothing.
 
-### 11. (Optional) try the CachyOS BORE kernel
+### 10. (Optional) try the CachyOS BORE kernel
 
 ```bash
 ./run.sh 09

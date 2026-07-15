@@ -97,6 +97,14 @@ install_aur_from_list() {
 
 service_enable_now() { sudo systemctl enable --now "$1"; }
 
+# ---- config-archive location ----
+# Defaults to a `config-archive/` directory sitting inside THIS repo,
+# wherever it actually is on disk — works no matter what you named the
+# clone directory or how deep you nested it. Override with CONFIG_ARCHIVE=
+# only if you deliberately keep config-archive as a separate sibling repo.
+BOOTSTRAP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CONFIG_ARCHIVE="${CONFIG_ARCHIVE:-${BOOTSTRAP_ROOT}/config-archive}"
+
 # ---- reboot checkpoints ----
 # Call this at the end of a phase that needs a reboot before the next
 # phase can safely run (new kernel, display/login manager, etc).

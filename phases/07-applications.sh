@@ -10,7 +10,6 @@ require_sudo
 log_info "Phase 07-applications: Everyday applications"
 
 install_pacman_from_list packages/07-applications.list
-install_aur downgrade
 
 mark_done "$PHASE"
 log_ok "Phase 07-applications complete."
