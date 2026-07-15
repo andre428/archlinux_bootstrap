@@ -7,7 +7,7 @@ PHASE="11-dotfiles"
 skip_if_done "$PHASE"
 require_sudo
 
-DOTFILES_URL="${DOTFILES_URL:-https://github.com/andre428/archlinux_bootstrap.git}"
+DOTFILES_URL="${DOTFILES_URL:-https://github.com/andre428/zaafiel_dotconfig.git}"
 
 log_info "Phase 11: dotfiles (yadm)"
 

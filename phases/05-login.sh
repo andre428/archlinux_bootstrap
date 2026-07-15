@@ -16,7 +16,6 @@ install_pacman_from_list packages/05-login.list
 sudo mkdir -p /etc/greetd
 sudo cp "${CONFIG_ARCHIVE}/etc/greetd/config.toml" /etc/greetd/config.toml
 service_enable_now greetd.service
-service_enable_now seatd.service
 
 mark_done "$PHASE"
 request_reboot

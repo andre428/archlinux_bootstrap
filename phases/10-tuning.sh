@@ -26,12 +26,14 @@ deploy_managed_conf "${CONFIG_ARCHIVE}/etc/systemd/system.conf.d/timeouts.conf" 
 deploy_managed_conf "${CONFIG_ARCHIVE}/etc/systemd/journald.conf.d/size-cap.conf" /etc/systemd/journald.conf.d/size-cap.conf
 deploy_managed_conf "${CONFIG_ARCHIVE}/etc/sysctl.d/99-zram-tuning.conf"          /etc/sysctl.d/99-zram-tuning.conf
 deploy_managed_conf "${CONFIG_ARCHIVE}/etc/udev/rules.d/60-ioschedulers.rules"    /etc/udev/rules.d/60-ioschedulers.rules
+deploy_managed_conf "${CONFIG_ARCHIVE}/etc/pacman.d/hooks/clean_cache.hook"       /etc/pacman.d/hooks/clean_cache.hook
 
 sudo sysctl --system
 sudo udevadm control --reload
 sudo systemctl daemon-reexec
 sudo systemctl restart systemd-journald
 sudo systemctl restart systemd-zram-setup@zram0.service 2>/dev/null || true
+sudo systemctl enable --now fstrim.timer
 
 mark_done "$PHASE"
 log_ok "Phase 10 complete."
